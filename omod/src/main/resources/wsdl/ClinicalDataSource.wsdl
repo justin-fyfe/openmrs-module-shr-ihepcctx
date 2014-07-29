@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ClinicalDataSource" targetNamespace="urn:ihe:pcc:qed:2007" xmlns="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:hl7="urn:hl7-org:v3" xmlns:tns="urn:ihe:pcc:qed:2007" 
+   xmlns:wsoap11="http://schemas.xmlsoap.org/wsdl/soap/"
+   xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <!-- Query Care Record Event Profile Query -->
+      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUPC_IN043100UV01.xsd"/>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <!-- Query Care Record Event Profile Query Response -->
+      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUPC_IN043200UV01.xsd"/>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <!--General Query Activate Query Continue / Cancel -->
+      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUQI_IN000003UV01.xsd"/>
+    </xsd:schema>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <!-- Accept Ack -->
+      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/MCCI_IN000002UV01.xsd"/>
+    </xsd:schema>
+    <!-- 
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
+      <!__ General Query Activate Query Continue / Cancel __>
+      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUQI_IN000003UV01.xsd"/>
+      <xsd:element name="QUQI_IN000003UV01_Cancel">
+        <xsd:complexType>
+          <xsd:complexContent>
+            <xsd:extension base="MCCI_MT000300UV01.Message">
+              <xsd:attribute name="ITSVersion" type="xsd:string" use="required" fixed="XML_1.0"/>
+            </xsd:extension>
+          </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+    -->
+  </types>
+  <message name="QUPC_IN043100UV01_Message">
+    <part element="hl7:QUPC_IN043100UV01" name="Body"/>
+  </message>
+  <message name="QUPC_IN043200UV01_Message">
+    <part element="hl7:QUPC_IN043200UV01" name="Body"/>
+  </message>
+  <message name="QUQI_IN000003UV01_Message">
+    <part element="hl7:QUQI_IN000003UV01" name="Body"/>
+  </message>
+  <message name="QUQI_IN000003UV01_Cancel_Message">
+    <part element="hl7:QUQI_IN000003UV01_Cancel" name="Body"/>
+  </message>
+  <message name="MCCI_IN000002UV01_Message">
+    <part element="hl7:MCCI_IN000002UV01" name="Body"/>
+  </message>
+  <portType name="ClinicalDataSource_PortType">
+    <operation name="ClinicalDataSource_QUPC_IN043100UV01">
+      <input message="tns:QUPC_IN043100UV01_Message" wsaw:Action="urn:hl7-org:v3:QUPC_IN043100UV01"/>
+      <output message="tns:QUPC_IN043200UV01_Message" wsaw:Action="urn:hl7-org:v3:QUPC_IN043200UV01"/>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Continue">
+      <input message="tns:QUQI_IN000003UV01_Message" wsaw:Action="urn:hl7-org:v3:QUQI_IN000003UV01_Continue"/>
+      <output message="tns:QUPC_IN043200UV01_Message" wsaw:Action="urn:hl7-org:v3:QUPC_IN043200UV01"/>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Cancel">
+      <input message="tns:QUQI_IN000003UV01_Cancel_Message" wsaw:Action="urn:hl7-org:v3:QUQI_IN000003UV01_Cancel"/>
+      <output message="tns:MCCI_IN000002UV01_Message" wsaw:Action="urn:hl7-org:v3:MCCI_IN000002UV01"/>
+    </operation>
+  </portType>
+  <binding name="ClinicalDataSource_Binding_Soap12" type="tns:ClinicalDataSource_PortType">
+    <wsoap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ClinicalDataSource_QUPC_IN043100UV01">
+      <wsoap12:operation soapAction="urn:hl7-org:v3:QUPC_IN043100UV01"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Continue">
+      <wsoap12:operation soapAction="urn:hl7-org:v3:QUQI_IN000003UV01"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Cancel">
+      <wsoap12:operation soapAction="urn:hl7-org:v3:QUQI_IN000003UV01_Cancel"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="ClinicalDataSource_Binding_Soap11" type="tns:ClinicalDataSource_PortType">
+    <wsoap11:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="ClinicalDataSource_QUPC_IN043100UV01">
+      <wsoap11:operation soapAction="urn:hl7-org:v3:QUPC_IN043100UV01"/>
+      <input>
+        <wsoap12:body use="literal"/>
+      </input>
+      <output>
+        <wsoap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Continue">
+      <wsoap11:operation soapAction="urn:hl7-org:v3:QUQI_IN000003UV01"/>
+      <input>
+        <wsoap11:body use="literal"/>
+      </input>
+      <output>
+        <wsoap11:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="ClinicalDataSource_QUQI_IN000003UV01_Cancel">
+      <wsoap11:operation soapAction="urn:hl7-org:v3:QUQI_IN000003UV01_Cancel"/>
+      <input>
+        <wsoap11:body use="literal"/>
+      </input>
+      <output>
+        <wsoap11:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="ClinicalDataSource_Service">
+    <port binding="tns:ClinicalDataSource_Binding_Soap11" name="ClinicalDataSource_Port_Soap11">
+      <wsoap11:address location="http://example.org/ClinicalDataSource_Soap11"/>
+    </port>
+    <port binding="tns:ClinicalDataSource_Binding_Soap12" name="ClinicalDataSource_Port_Soap12">
+      <wsoap12:address location="http://example.org/ClinicalDataSource_Soap12"/>
+    </port>
+  </service>
+</definitions>
