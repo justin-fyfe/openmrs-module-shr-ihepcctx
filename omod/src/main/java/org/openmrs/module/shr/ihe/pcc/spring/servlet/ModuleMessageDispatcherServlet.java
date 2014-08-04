@@ -3,7 +3,9 @@ package org.openmrs.module.shr.ihe.pcc.spring.servlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +34,11 @@ import org.openmrs.module.shr.ihe.pcc.everest.QedFormatter;
 import org.openmrs.module.web.ModuleServlet;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.web.util.WebUtils;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapHeaderException;
 import org.springframework.ws.soap.SoapVersion;
@@ -39,6 +46,10 @@ import org.springframework.ws.soap.addressing.server.annotation.Action;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.transport.http.HttpTransportConstants;
+import org.springframework.ws.transport.http.MessageDispatcherServlet;
+import org.springframework.xml.xsd.SimpleXsdSchema;
+import org.springframework.xml.xsd.XsdSchema;
 
 /**
  * A SOAP message dispatcher servlet
@@ -47,144 +58,83 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
  *       missing implementation of getInitParameterNames in oMRS and the need to have a 
  *       /WEB-INF/v3-serg
  */
-public class ModuleMessageDispatcherServlet extends HttpServlet {
+public class ModuleMessageDispatcherServlet extends MessageDispatcherServlet {
 
-	// Log
-	protected final Log log = LogFactory.getLog(this.getClass());
-
-	// Endpoing classes
-	protected Map<String, Method> m_actionMap = new HashMap<String, Method>();
-	
-	protected QedFormatter m_formatter = new QedFormatter();
-	protected EverestUnmarshaller m_unMarshaller = new EverestUnmarshaller(this.m_formatter);
-	protected EverestMarshaller m_marshaller = new EverestMarshaller(this.m_formatter);
-	
-	
 	/**
-	 * Init the servlet
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+	/**
+	 * Override initialize
+	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
 	 */
 	@Override
-    public void init() throws ServletException {
-	    super.init();
-	    
-	    // Initialize the endpoints
-	    this.initializeEndpointList();
+    public void init(ServletConfig config) throws ServletException {
+	    // TODO Auto-generated method stub
+		super.setContextConfigLocation("classpath:v3-servlet.xml");
+		super.setTransformWsdlLocations(true);
+	    super.init(new SpringFakeConfig(config.getServletName(), config.getServletContext()));
+    }
+
+	
+	/**
+	 * Get XSD schema
+	 * @see org.springframework.ws.transport.http.MessageDispatcherServlet#getXsdSchema(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+    protected XsdSchema getXsdSchema(HttpServletRequest request) {
+		if (HttpTransportConstants.METHOD_GET.equals(request.getMethod()) &&
+				  request.getRequestURI().endsWith(".xsd")) {
+				  String fileName = WebUtils.extractFilenameFromUrlPath(request.getRequestURI());
+				  Resource schemaResource = new ClassPathResource(String.format("classpath:wsdl/xsd/%s", fileName));
+				  return new SimpleXsdSchema(schemaResource);
+		}
+		else {
+			return null;
+		  }
     }
 
 	/**
-	 * Initialize endpoint list
+	 * Fake spring config
 	 */
-	private void initializeEndpointList() {
-		ClassPathScanningCandidateComponentProvider classPathScanner = new ClassPathScanningCandidateComponentProvider(true);
-		classPathScanner.addIncludeFilter(new AnnotationTypeFilter(Endpoint.class));
-	
-		// scan in org.openmrs.module.RegenstriefHl7Adapter.preprocessorHandler package
-		Set<BeanDefinition> components = classPathScanner.findCandidateComponents("org.openmrs.module.shr");
-		for (BeanDefinition component : components) {
-			try {
-				Class<?> cls = Class.forName(component.getBeanClassName());
-				
-				// Scan the type for handlers
-				for(Method m : cls.getMethods())
-				{
-					Action action = m.getAnnotation(Action.class);
-					if(action != null) 
-						m_actionMap.put(action.value(), m);
-				}
-			}
-			catch (ClassNotFoundException e) {
-				log.error(e.getMessage(), e);
-			}
-		}	    
-    }
+	public static class SpringFakeConfig extends ModuleServlet.SimpleServletConfig
+	{
 
-	/**
-	 * Do a get operation
-	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	@Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		/**
+		 * Creates an instance of the fake spring configuration
+		 */
+		public SpringFakeConfig(String name, ServletContext servletContext) {
+	        super(name, servletContext);
+        }
+
+
+		/**
+		 * Return an empty enumeration
+		 * @see org.openmrs.module.web.ModuleServlet.SimpleServletConfig#getInitParameterNames()
+		 */
+		@Override
+		public Enumeration getInitParameterNames() {
+			return new Enumeration<Object>() {
 		
-		resp.setStatus(415);
-    }
+				@Override
+		        public boolean hasMoreElements() {
+		            // TODO Auto-generated method stub
+		            return false;
+		        }
+		
+				@Override
+		        public Object nextElement() {
+		            // TODO Auto-generated method stub
+		            return null;
+		        }
+				
+				
+			};
+		}
+		
+	}
 
-	/**
-	 * Handle a post and send it to the OpenMRS context
-	 * @see org.springframework.web.servlet.FrameworkServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-	 */
-	@Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// Parse the soap message using SAAJ
-		// TODO: See how this can be configured instead of hard coded
-		SaajSoapMessageFactory soapMessageFactory = new SaajSoapMessageFactory();
-		soapMessageFactory.setSoapVersion(SoapVersion.SOAP_12);
-		SaajSoapMessage responseSoapMessage = soapMessageFactory.createWebServiceMessage();
-
-		// Set response message stuff
-		resp.setContentType("application/soap+xml");
-		try
-		{
-			
-			SaajSoapMessage requestMessage = soapMessageFactory.createWebServiceMessage(req.getInputStream());
 	
-			// Route to an appropriate method on an endpoint
-			String action = requestMessage.getSoapAction();
-			log.debug(String.format("Processing message with action %s", action));
-			
-			// TODO: Validate WSA-TO
-			// TODO: Validate all mustUnderstand headers
-			Iterator<SoapHeaderElement> headers = requestMessage.getSoapHeader().examineAllHeaderElements();
-			while(headers.hasNext())
-			{
-				SoapHeaderElement current = headers.next();
-				if(current.getName().getLocalPart().equals("To")) // TODO: validate WSA-TO
-					;
-				else if(current.getMustUnderstand())
-					throw new SoapHeaderException(current.getName().getLocalPart());
-			}
-			
-			Method invokeMethod = this.m_actionMap.get(action);
-			if(invokeMethod == null)
-				throw new NotSupportedException(action);
-			
-			// Process the body as HL7
-			Object request = this.m_unMarshaller.unmarshal(requestMessage.getPayloadSource());
-			if(invokeMethod.getParameterTypes()[0].isAssignableFrom(request.getClass())) // Safety for types
-			{
-				Object response = invokeMethod.invoke(null, request);
-				// Get the response action
-	        	responseSoapMessage.setSoapAction(action + "_Response");
-	        	this.m_marshaller.marshal(response, responseSoapMessage.getPayloadResult());
-			}
-			else
-				throw new IllegalArgumentException("Invalid request payload");
-		}
-		catch(SoapHeaderException e)
-		{
-			log.error(e);
-			responseSoapMessage.getSoapBody().addMustUnderstandFault(e.getMessage(), Locale.getDefault());
-        	resp.setStatus(500);
-		}
-        catch (NotSupportedException e) {
-        	log.error(e);
-        	responseSoapMessage.getSoapBody().addClientOrSenderFault(e.getMessage(), Locale.getDefault());
-        	resp.setStatus(415);
-        }
-        catch (IllegalArgumentException e) {
-        	log.error(e);
-        	responseSoapMessage.getSoapBody().addClientOrSenderFault(e.getMessage(), Locale.getDefault());
-        	resp.setStatus(400);
-        }
-        catch (Exception e) {
-        	log.error(e);
-        	responseSoapMessage.getSoapBody().addClientOrSenderFault(e.getMessage(), Locale.getDefault());
-        	resp.setStatus(500);
-        }
-		finally
-		{
-			responseSoapMessage.writeTo(resp.getOutputStream());
-		}
-    }
-
 
 }

@@ -7,7 +7,7 @@ import org.marc.everest.rmim.uv.ne2008.interaction.QUQI_IN000003UV01;
 /**
  * Clinical Data Source service
  */
-public interface ClinicalDataSource {
+public interface ClinicalDataSourceService {
 	
 	/**
 	 * PCC-1 

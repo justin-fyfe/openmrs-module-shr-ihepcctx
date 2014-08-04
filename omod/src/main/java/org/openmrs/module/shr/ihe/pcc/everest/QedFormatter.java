@@ -19,6 +19,7 @@ public class QedFormatter extends XmlIts1Formatter {
 	public QedFormatter() {
 		this.addCachedClass(QUPC_IN043100UV01.class);
 		this.addCachedClass(QUQI_IN000003UV01.class);
+		this.setValidateConformance(false);
 		this.getGraphAides().add(new DatatypeFormatter(R1FormatterCompatibilityMode.Universal));
 	}
 }

@@ -25,7 +25,6 @@
       		http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
 
 	<!-- Add here beans related to the web context -->
-
 	 
 	<!-- Annotation based controllers -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
@@ -39,22 +38,10 @@
     
 	<!--  Everest Marshaler  -->
 	<bean id="everestMarshaller" class="org.openmrs.module.shr.ihe.pcc.everest.EverestMarshaller">
-		<constructor-arg>
-			<ref bean="everestFormatter"/>
-		</constructor-arg>	
 	</bean>
 	<bean id="everestUnmarshaller" class="org.openmrs.module.shr.ihe.pcc.everest.EverestUnmarshaller">
-		<constructor-arg>
-			<ref bean="everestFormatter"/>
-		</constructor-arg>	
 	</bean>
-	<bean id="everestFormatter" class="org.openmrs.module.shr.ihe.pcc.everest.QedFormatter">
-		<property name="validateConformance">
-			<value>false</value>
-		</property>
-	</bean>
-	<bean id="clinicalDataSourceImpl" class="org.openmrs.module.shr.ihe.pcc.actors.impl.ClinicalDataSourceImpl">
-	</bean>
+
 	
 	
     <bean id="loggingInterceptor"
@@ -98,6 +85,9 @@
  	
 	<sws:annotation-driven marshaller="everestMarshaller" unmarshaller="everestUnmarshaller"/>
 
- 	<context:component-scan base-package="org.openmrs.module.shr.ihe.pcc"/>
+	<sws:static-wsdl location="classpath:wsdl/ClinicalDataSource.wsdl"/>
+
+ 
+ 	<context:component-scan base-package="org.openmrs.module.shr.ihe.pcc.actors"/>
 		
 </beans>

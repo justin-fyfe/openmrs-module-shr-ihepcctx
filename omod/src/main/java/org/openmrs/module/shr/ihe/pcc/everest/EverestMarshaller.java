@@ -54,28 +54,13 @@ import org.xml.sax.SAXException;
 public class EverestMarshaller implements Marshaller {
 
 	// The structure formatter
-	private IXmlStructureFormatter m_formatter;
+	private final IXmlStructureFormatter m_formatter = new QedFormatter();
 
-	// Graph results
-	private HashMap<Object,IFormatterGraphResult> m_graphResults = new HashMap<Object, IFormatterGraphResult>(); 
-	
-	/**
-	 * Get a graph result
-	 */
-	public synchronized IFormatterGraphResult popGraphResult(Object context)
-	{
-		IFormatterGraphResult res = this.m_graphResults.get(context);
-		if(res != null)
-			this.m_graphResults.remove(context);
-		return res;
-	}
-	
 	/**
 	 * Creates a new instance of the Marshaller with the specified formatter
 	 */
-	public EverestMarshaller(IXmlStructureFormatter formatter)
+	public EverestMarshaller()
 	{
-		this.m_formatter = formatter;
 	}
 	
 	/**
@@ -88,11 +73,11 @@ public class EverestMarshaller implements Marshaller {
 		if(obj instanceof IGraphable)
 		{
 			if(res instanceof StreamResult)
-				this.m_graphResults.put(obj, this.m_formatter.graph(((StreamResult)res).getOutputStream(), (IGraphable)obj));
+				this.m_formatter.graph(((StreamResult)res).getOutputStream(), (IGraphable)obj);
 			else // Not a stream result we need to transform what Everest can handle (a stream) to SAX/DOM
 			{
 				ByteArrayOutputStream bos = new ByteArrayOutputStream();
-				this.m_graphResults.put(obj, this.m_formatter.graph(bos, (IGraphable)obj));
+				this.m_formatter.graph(bos, (IGraphable)obj);
 				StreamSource streamSrc = new StreamSource(new ByteArrayInputStream(bos.toByteArray()));
 				try {
 					TransformerFactory.newInstance().newTransformer().transform(streamSrc, res);

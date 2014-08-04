@@ -27,14 +27,14 @@
 	<bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>${project.parent.groupId}.shr.ihe.pcc.api.PccTxService</value>
+				<value>${project.parent.groupId}.shr.ihe.pcc.api.Hl7ClinicalStatementService</value>
 				<bean
 					class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager">
 						<ref bean="transactionManager" />
 					</property>
 					<property name="target">
-						<bean class="${project.parent.groupId}.shr.ihe.pcc.api.impl.PccTxServiceImpl">
+						<bean class="${project.parent.groupId}.shr.ihe.pcc.api.impl.Hl7ClinicalStatementServiceImpl">
 							<!-- <property name="dao">
 								<bean class="${project.parent.groupId}.shr.cdahandler.api.db.hibernate.HibernatecdaAntepartumDAO">
 									<property name="sessionFactory">

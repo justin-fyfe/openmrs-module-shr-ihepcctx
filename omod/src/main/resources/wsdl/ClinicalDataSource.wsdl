@@ -8,19 +8,19 @@
   <types>
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
       <!-- Query Care Record Event Profile Query -->
-      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUPC_IN043100UV01.xsd"/>
+      <xsd:include schemaLocation="./xsd/QUPC_IN043100UV01.xsd"/>
     </xsd:schema>
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
       <!-- Query Care Record Event Profile Query Response -->
-      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUPC_IN043200UV01.xsd"/>
+      <xsd:include schemaLocation="./xsd/QUPC_IN043200UV01.xsd"/>
     </xsd:schema>
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
       <!--General Query Activate Query Continue / Cancel -->
-      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/QUQI_IN000003UV01.xsd"/>
+      <xsd:include schemaLocation="./xsd/QUQI_IN000003UV01.xsd"/>
     </xsd:schema>
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
       <!-- Accept Ack -->
-      <xsd:include schemaLocation="../../ITI/schema/HL7V3/NE2008/multicacheschemas/MCCI_IN000002UV01.xsd"/>
+      <xsd:include schemaLocation="./xsd/MCCI_IN000002UV01.xsd"/>
     </xsd:schema>
     <!-- 
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:hl7-org:v3">
@@ -129,10 +129,10 @@
   </binding>
   <service name="ClinicalDataSource_Service">
     <port binding="tns:ClinicalDataSource_Binding_Soap11" name="ClinicalDataSource_Port_Soap11">
-      <wsoap11:address location="http://example.org/ClinicalDataSource_Soap11"/>
+      <wsoap11:address location="http://openmrs.fyfesoftware.ca:8080/openmrs-standalone/ms/v3"/>
     </port>
     <port binding="tns:ClinicalDataSource_Binding_Soap12" name="ClinicalDataSource_Port_Soap12">
-      <wsoap12:address location="http://example.org/ClinicalDataSource_Soap12"/>
+      <wsoap12:address location="http://openmrs.fyfesoftware.ca:8080/openmrs-standalone/ms/v3"/>
     </port>
   </service>
 </definitions>
